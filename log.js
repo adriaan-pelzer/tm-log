@@ -8,9 +8,12 @@ exports.logger = function ( filename, config ) {
     var fileNameRelativeToThisDir, module, logger;
 
     fileNameRelativeToThisDir = path.relative ( __dirname, filename.replace ( path.extname ( filename ), '' ) );
-    module = fileNameRelativeToThisDir.split ( path.sep );
+    module = _.reject ( fileNameRelativeToThisDir.split ( path.sep ), function ( item ) {
+        return item === '..';
+    } );
 
     logger = log4js.getLogger ( module.join ( '.' ) );
+
     logger.setLevel ( _.reduce ( module, function ( logLevel, mPart ) {
         return _.isString ( logLevel ) ? logLevel : ( _.isUndefined ( logLevel[mPart] ) ? 'ERROR' : logLevel[mPart] );
     }, config.logLevels ) );
